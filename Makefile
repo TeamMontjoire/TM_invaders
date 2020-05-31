@@ -8,7 +8,7 @@ CC=gcc
 
 all: invaders
 
-invaders: main.o ship.o
+invaders: main.o ship.o;echo "test"
 	$(CC) -o invaders main.c ship.c $(OSFLAG) -lSDL2
 	
 main.o: main.c main.h
