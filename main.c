@@ -33,11 +33,11 @@ int main(int argc, char *argv[])
 	
 	if (SDL_VideoInit(NULL) < 0) {SDL_Log("Problem SDL Video init : %s", SDL_GetError());return 1;}
 	
-	//~ window = SDL_CreateWindow("Invaders",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
-		//~ WIDTH,HEIGHT,SDL_WINDOW_SHOWN);
+	 window = SDL_CreateWindow("Invaders",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
+		 WIDTH,HEIGHT,SDL_WINDOW_SHOWN);
 		
-		window = SDL_CreateWindow("Invaders",0,0,
-		WIDTH,HEIGHT,SDL_WINDOW_SHOWN);
+		/*window = SDL_CreateWindow("Invaders",0,0,
+		WIDTH,HEIGHT,SDL_WINDOW_SHOWN);*/
 	
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer == NULL) {SDL_Log("Couldn't create renderer : %s", SDL_GetError());return 1;}
