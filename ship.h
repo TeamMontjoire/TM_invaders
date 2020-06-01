@@ -4,6 +4,9 @@
 #include <SDL2/SDL.h>
 
 #define SHAPE_SIZE 32
+#define NB_SPRITES_MISSILES 30
+
+typedef enum {W, E} Direction;
 
 typedef struct {
 	int life;
@@ -12,9 +15,11 @@ typedef struct {
 	SDL_Rect rectDst;
 	SDL_Surface *surface;
 	SDL_Texture *texture;
-	SDL_Surface *surfaceMissile;
-	SDL_Texture *textureMissile;
-	SDL_bool shoot;
+	Direction direction;
+	SDL_Surface *surfaceMissile[NB_SPRITES_MISSILES];
+	SDL_Texture *textureMissile[NB_SPRITES_MISSILES];
+	int nbMissile;
+	SDL_bool move;
 }Ship;
 
 Ship *new_ship(SDL_Renderer *renderer);

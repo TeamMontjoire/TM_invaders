@@ -1,5 +1,6 @@
 #include "main.h"
 #include "ship.h"
+#include "enemy.h"
 
 SDL_bool screen_limit(SDL_Rect rect) {
 	if (rect.x + rect.w > WIDTH) return SDL_TRUE;
@@ -33,17 +34,19 @@ int main(int argc, char *argv[])
 	
 	if (SDL_VideoInit(NULL) < 0) {SDL_Log("Problem SDL Video init : %s", SDL_GetError());return 1;}
 	
-	//~ window = SDL_CreateWindow("Invaders",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
-		//~ WIDTH,HEIGHT,SDL_WINDOW_SHOWN);
-		
-		window = SDL_CreateWindow("Invaders",0,0,
+	window = SDL_CreateWindow("Invaders",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,
 		WIDTH,HEIGHT,SDL_WINDOW_SHOWN);
+		
+		//~ window = SDL_CreateWindow("Invaders",0,0,
+		//~ WIDTH,HEIGHT,SDL_WINDOW_SHOWN);
 	
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer == NULL) {SDL_Log("Couldn't create renderer : %s", SDL_GetError());return 1;}
 	
 	Ship *ship = new_ship(renderer);
-	ship->rectDst.x = ship->surfaceMissile->clip_rect.x = 128;
+	//~ ship->rectDst.x = ship->surfaceMissile->clip_rect.x = 128;
+		ship->rectDst.x = 128;
+
 	ship->rectDst.y = HEIGHT - SHAPE_SIZE;
 	update_scene(renderer, ship);
 
@@ -59,40 +62,51 @@ int main(int argc, char *argv[])
 							quit=SDL_TRUE;
 							break;
 						case SDLK_SPACE:
-							ship->surfaceMissile->clip_rect.x = ship->rectDst.x;
-							ship->surfaceMissile->clip_rect.y = HEIGHT - 2*SHAPE_SIZE;
-							ship->shoot = SDL_TRUE;
+							ship->nbMissile++;
+							ship->surfaceMissile[ship->nbMissile]->clip_rect.x = ship->rectDst.x;
+							ship->surfaceMissile[ship->nbMissile]->clip_rect.y = HEIGHT - 2*SHAPE_SIZE;
+							if (ship->nbMissile == NB_SPRITES_MISSILES-1) ship->nbMissile = 0;
 							break;
-					}//end switch event.key.keysym.sym
+						case SDLK_LEFT:
+							ship->direction = W;
+							ship->move = SDL_TRUE;
+							break;
+						case SDLK_RIGHT:
+							ship->direction = E;
+							ship->move = SDL_TRUE;
+							break;
+					}//end switch event.key.keysym.sym keydown
+					break;
+				case SDL_KEYUP:
+					switch (event.key.keysym.sym) {
+						case SDLK_LEFT:
+							ship->move = SDL_FALSE;
+							break;
+						case SDLK_RIGHT:
+							ship->move = SDL_FALSE;
+							break;
+					}//end switch event.key.keysym.sym keyup
+					break;
 			}//end switch event.type
 		}//endif PollEvent
 		
 		currentTime = SDL_GetTicks();
 		if (currentTime - lastTime > DELTA_TIME) {
-			if (event.key.state == SDL_PRESSED) {
-				switch (event.key.keysym.sym) {
-					case SDLK_LEFT:
-						ship->rectDst.x -= STEP;
-						if (screen_limit(ship->rectDst)) ship->rectDst.x +=STEP;
-						break;
-					case SDLK_RIGHT:
-						ship->rectDst.x += STEP;
-						if (screen_limit(ship->rectDst)) ship->rectDst.x -=STEP;
-						break;
-					//~ case SDLK_SPACE:
-						//~ printf("Re espace\n");
-						//~ break;
-				}//end switch event.key.keysym.sym
-			}//end if event.key.state pressed
-			
-			ship->surfaceMissile->clip_rect.y -= STEP;
-			//~ if (event.key.keysym.sym == SDLK_SPACE && event.type == SDL_KEYUP) {
-				//~ switch (event.key.keysym.sym) {
-					//~ case SDLK_SPACE:
-						//~ printf("Test espace %d\n", currentTime);
-						//~ break;
-				//~ }
-			//~ }
+			if (ship->move) {
+				if (ship->direction == W) {
+					ship->rectDst.x -= STEP;
+					if (screen_limit(ship->rectDst)) ship->rectDst.x +=STEP;
+				}
+				if (ship->direction == E) {
+					ship->rectDst.x += STEP;
+					if (screen_limit(ship->rectDst)) ship->rectDst.x -=STEP;
+				}
+			}
+		
+		for (int i=0;i<NB_SPRITES_MISSILES;i++)
+		{	
+			ship->surfaceMissile[i]->clip_rect.y -= STEP;
+		}
 			
 			if (ship->rectSrc.x == 0) ship->rectSrc.x = SHAPE_SIZE; // change sprite
 				else ship->rectSrc.x = 0;
