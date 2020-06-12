@@ -30,6 +30,7 @@ typedef struct {
 	//~ SDL_Texture *textureMissile[NB_SPRITES_MISSILES];
 	int nbMissile;
 	SDL_bool move;
+	SDL_bool shoot;
 }Ship;
 
 Ship *new_ship(SDL_Renderer *renderer);

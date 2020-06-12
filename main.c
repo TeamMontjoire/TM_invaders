@@ -13,7 +13,8 @@ void display_rect(SDL_Rect rect)
 
 int random_between(int min, int max)
 {
-	return SHAPE_SIZE * (min + rand()%(max - min + 1));
+	//~ return SHAPE_SIZE * (min + rand()%(max - min + 1));
+		return (min + rand()%(max - min + 1));
 }
 
 SDL_bool screen_limit(SDL_Rect rect) {
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
 	Margin marginEnemy;
 	
 	srand(time(NULL));
-	int COL = WIDTH / SHAPE_SIZE - SHAPE_SIZE_ENEMY;
+	int COL = WIDTH - SHAPE_SIZE_ENEMY;
 	//~ int COL = WIDTH - SHAPE_SIZE_ENEMY;
 	
 	if (SDL_VideoInit(NULL) < 0) {SDL_Log("Problem SDL Video init : %s", SDL_GetError());return 1;}
@@ -91,8 +92,12 @@ int main(int argc, char *argv[])
 	ship->rectDst.y = HEIGHT - SHAPE_SIZE;
 	
 	ListEnemy *list = new_list_enemy(renderer);
+	int WIDTH_CORRIDOR = WIDTH / NB_ENEMY;
+	int POS_CORRIDOR =0;
 	for (int i=0;i<NB_ENEMY;i++) {
-		list->enemy[i]->rectDst.x = random_between(0, COL);
+		list->enemy[i]->rectDst.x = random_between(POS_CORRIDOR, POS_CORRIDOR+WIDTH_CORRIDOR-SHAPE_SIZE_ENEMY);
+		POS_CORRIDOR += WIDTH_CORRIDOR;
+		//~ printf("pos x : %d\n", list->enemy[i]->rectDst.x);
 	}
 	marginEnemy.bottom = 16;
 
@@ -192,8 +197,7 @@ int main(int argc, char *argv[])
 			}
 			
 			/* Enemy management */
-			if (timeEnemy >= 5 * DELTA_TIME) {
-				printf("in delta\n");
+			//~ if (timeEnemy >= 6 * DELTA_TIME) {
 				for (int j=0;j<NB_ENEMY;j++) {
 					if (list->enemy[j]->touch) {
 						printf("nbSprite %d\n", list->enemy[j]->nbSprite);
@@ -222,13 +226,17 @@ int main(int argc, char *argv[])
 								break;
 						}//end switch nbSprite
 					} else {
-						list->enemy[j]->rectDst.y += SHAPE_SIZE_ENEMY/4; //else enemy continue to keep going down
-						timeEnemy = 0;
+						if (timeEnemy >= 7 * DELTA_TIME) {
+							list->enemy[j]->rectDst.y += SHAPE_SIZE_ENEMY/4; //else enemy continue to keep going down
+							timeEnemy = 0;
+						} else {
+							timeEnemy += DELTA_TIME;
+						}
 					}//endif enemy touch
 				}//endfor
-			} else {
-				timeEnemy += DELTA_TIME;
-			}
+			//~ } else {
+				//~ timeEnemy += DELTA_TIME;
+			//~ }
 			/**********************
 			 * END GAME PROCESSING
 			 * *********************/

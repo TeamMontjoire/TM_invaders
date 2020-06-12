@@ -42,6 +42,7 @@ Ship *new_ship(SDL_Renderer *renderer)
 	this->rectDst.h = SHAPE_SIZE;
 	
 	this->move = SDL_FALSE;
+	this->shoot = SDL_FALSE;
 	this->nbMissile = 0;
 	return this;
 }
