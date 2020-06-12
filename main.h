@@ -7,3 +7,10 @@
 #define DELTA_TIME 60
 
 #define STEP 8
+
+typedef struct {
+	int top;
+	int bottom;
+	int left;
+	int right;
+}Margin;

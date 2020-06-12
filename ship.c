@@ -12,11 +12,21 @@ Ship *new_ship(SDL_Renderer *renderer)
 	
 	for (int i=0; i<NB_SPRITES_MISSILES; i++)
 	{
-		this->surfaceMissile[i] = SDL_LoadBMP("img/missile.bmp");
-		if (this->surfaceMissile[i] == NULL) {SDL_Log("Couldn't create surface missile : %s", SDL_GetError());return NULL;}
-		SDL_SetColorKey(this->surfaceMissile[i], SDL_TRUE, SDL_MapRGB(this->surfaceMissile[i]->format, 255, 255, 255));
-		this->textureMissile[i] = SDL_CreateTextureFromSurface(renderer, this->surfaceMissile[i]);
-		if (this->textureMissile[i] == NULL) {SDL_Log("Coulndn't create texture missile: %s", SDL_GetError());return NULL;}
+		this->missile[i].surface = SDL_LoadBMP("img/missile.bmp");
+		if (this->missile[i].surface == NULL) {SDL_Log("Couldn't create surface missile : %s", SDL_GetError());return NULL;}
+		SDL_SetColorKey(this->missile[i].surface, SDL_TRUE, SDL_MapRGB(this->missile[i].surface->format, 255, 255, 255));
+		this->missile[i].texture = SDL_CreateTextureFromSurface(renderer, this->missile[i].surface);
+		if (this->missile[i].texture == NULL) {SDL_Log("Coulndn't create texture missile: %s", SDL_GetError());return NULL;}
+		this->missile[i].touch = SDL_FALSE;
+		this->missile[i].rectSrc.x = 0;
+		this->missile[i].rectSrc.y = 0;
+		this->missile[i].rectSrc.w = SHAPE_SIZE;
+		this->missile[i].rectSrc.h = SHAPE_SIZE;
+		this->missile[i].rectDst.x = 0;
+		this->missile[i].rectDst.y = -3*SHAPE_SIZE; // out of screen by default
+		this->missile[i].rectDst.w = SHAPE_SIZE;
+		this->missile[i].rectDst.h = SHAPE_SIZE;
+		this->missile[i].nbSprite = 0;
 		//~ this->shoot[i] = SDL_FALSE;
 	}
 	
@@ -45,15 +55,15 @@ void Ship_update_missile(Ship *this, SDL_Renderer *renderer)
 {
 	for (int i=0; i<NB_SPRITES_MISSILES; i++)
 	{
-			SDL_RenderCopy(renderer, this->textureMissile[i], NULL, &this->surfaceMissile[i]->clip_rect);
+			SDL_RenderCopy(renderer, this->missile[i].texture, &this->missile[i].rectSrc, &this->missile[i].rectDst);
 	}
 }
 
 void free_ship(Ship *this)
 {
 	for (int i=0; i<NB_SPRITES_MISSILES;i++) {
-		SDL_DestroyTexture(this->textureMissile[i]);
-		SDL_FreeSurface(this->surfaceMissile[i]);
+		SDL_DestroyTexture(this->missile[i].texture);
+		SDL_FreeSurface(this->missile[i].surface);
 	}
 	SDL_DestroyTexture(this->texture);
 	SDL_FreeSurface(this->surface);
